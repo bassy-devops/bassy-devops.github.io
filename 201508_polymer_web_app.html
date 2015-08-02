@@ -1,0 +1,215 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Polymerで犬のお散歩図鑑というWEBアプリを作成した話">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PolymerでWEBアプリ作成</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Web blog">
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=ja' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link rel="stylesheet" href="material.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="demo-blog demo-blog--blogpost mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="demo-back">
+          <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="index.html">
+            <i class="material-icons">arrow_back</i>
+          </a>
+        </div>
+        <div class="demo-blog__posts mdl-grid">
+          <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3>Polymer 1.0 で WEBアプリを作成してみた話</h3>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+              <div class="minilogo"></div>
+              <div>
+                <strong>polymer</strong>
+                <span>2015/08/03</span>
+              </div>
+              <div class="section-spacer"></div>
+              <div class="meta__favorites">1 <i class="material-icons">favorite</i></div>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text">
+              <h5>なぜWEBアプリなのか</h5>
+              <p>
+                私は最近、モバイルの場合なんでもかんでもアプリになっていてそれWebでいいじゃんと思うようなものですらアプリになっている現状に違和感を感じていました。
+                そこに前々から気になっていたPolymerが1.0でProduction readyになったので、試しに 犬のお散歩図鑑 というWEBアプリ作成してみました。
+                Polymerについては <a target="_break" href="https://www.google.co.jp/webhp?ie=UTF-8#q=polymer%20%E3%81%A8%E3%81%AF">Polymerとは</a> で検索してみるといろいろ出てくるので、そちらを参照してみてください。
+              </p>
+              <p>
+                簡単なサンプル的なものを作成してもどの程度実用に耐えるのかあまりイメージがわかないと思ったので、それなりに使えるWebアプリを作成してみることにしました。<br/>
+                <br/>
+                そこで今回はPolymerを使って下記のような機能を有した「犬のお散歩図鑑」を作成してみました。
+              </p>
+              <ul>
+                <li>お散歩経路の位置情報を取得し、端末内に永続的に保存</li>
+                <li>お散歩の履歴をGoogleMap上にヒートマップで表示</li>
+                <li>自動取得以外にユーザー操作でマーキング位置の保存</li>
+              </ul>
+
+              <h5>犬のお散歩図鑑を作ろうと思った経緯</h5>
+              <p>
+                犬はおしっこ（マーキング）をすることで縄張りを表現していると言われています。
+                確かにお散歩に行ってもいつもほぼ決まった場所でマーキングをしているように見えます。
+                それを可視化してさらに履歴も見れたら面白いのではないかと思い、このWEBアプリを作成してみました。
+              </p>
+
+              <h6>今回作成した実際のWebアプリ（犬のお散歩図鑑）は <a target="_break" href="https://dog-walkers.appspot.com/">こちら</a> </h6>
+              <p>
+                技術的には下記を要素を使用しています。
+              </p>
+              <ul>
+                <li>Polymer 1.0</li>
+                <li>IndexedDB</li>
+                <li><a target="_break" href="https://developers.google.com/maps/documentation/javascript/heatmaplayer">GoogleMapAPI（Heatmap Layer）</a></li>
+                <li>Google App Engine</li>
+              </ul>
+              <p><small>※Google App Engineは技術的というよりも環境の話になりますが、無料で使用できる枠があり、SSL(https)やhttp2にも対応しているためちょっとしたものを作成・公開するのに最適だと思います。</small></p>
+
+              <h5>Polymerについて</h5>
+              <p>
+                最初は Polymer Catalog から使いそうなものを自分で選択してみましたが、コンポーネント間の依存が解決できなかったのか思った通りに動かなかったので、<a target="_break" href="https://developers.google.com/web/tools/polymer-starter-kit/">Polymer Starter Kit</a>を利用しました。
+                これを使うと基本的な動作するものがすぐに利用でき、初めてPolymerを使用する人にお勧めです。
+              </p>
+              <p>
+                また気軽にマテリアルデザインを使ってみたい人はMaterial Design Liteを使ってみることをお勧めします。
+                こちらはBootstrapのようにCSSの指定だけで、マテリアルデザインが簡単に実現できます。
+                テンプレートも用意されているので、初心者にも使いやすいと思います。
+              </p>
+
+              <h5>作ってみて思った点</h5>
+              <p>
+                ・良かった点<br/>
+                テンプレートから大きく変更しなければ、それっぽいものが簡単に作れる。<br/>
+                モバイルで見ても思った以上になめらかな動きをする。
+                メニューの開閉のなめらかさにはちょっと感動した。
+              </p>
+              <p>
+                ・困った点<br/>
+                各イベントの実行タイミングが良くわからなかったため、初期化処理をどこで記述すれば動くのか手探りになった。
+                エレメント単体のイベント実行順は <a target="_break" href="https://www.polymer-project.org/1.0/docs/devguide/registering-elements.html">本家サイト</a> にあるが、例えばファーストページではないエレメントはページ表示時に発火するのか、ページ自体にアクセスがあった際に発火するのかなどが分からなかった。
+              </p>
+              <p>
+                ヒートマップの切り替えに手こずった。
+                ヒートマップの値を初期化して、再度値を設定しても前の値が残ってしまう問題に直面。
+                表示するたびに画面が重くなり、最終的にはフリーズしてしまうので、結構深刻だった。
+                分かってしまえば大した話ではないけど、ヒートマップを使っている人が少ないためかなかなか解決方法を見つけられなかった。
+              </p>
+              <p>
+                ブラウザによって各種APIの対応状況が違う。
+                特にiOSのブラウザは他と比較して対応してないAPIが結構あり、最後まで悩みのタネだった。
+              </p>
+ 
+              <h5>最後に</h5>
+              <p>
+                今回はまず動くものを作ってみたかったのでdomへのアクセス方法など作法的な部分はだいぶ目を瞑りました。
+                今後は今回のWEBアプリを作成するにあたって得られた知見をPolymerの作法を意識しつつ部分ごとに紹介していきたいと思います。
+                また個人的にはペットホテルに犬を預けたときにどんな散歩コースを歩いたのか知りたと思ったりするので、履歴情報の受け渡しが出来る機能を気が向いたら実装したいと思っています。
+              </p>
+              <p>
+                最後まで読んで頂きありがとうございました。
+              </p>
+
+
+            </div>
+            <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+              <div id="disqus_thread"></div>
+              <script type="text/javascript">
+                  /* * * CONFIGURATION VARIABLES * * */
+                  var disqus_shortname = 'webpochette';
+                  
+                  /* * * DON'T EDIT BELOW THIS LINE * * */
+                  (function() {
+                      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                  })();
+              </script>
+              <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+          </div>
+
+          <nav class="demo-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="index.html" class="demo-nav__button">
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900">
+                <i class="material-icons">arrow_back</i>
+              </button>
+              Newer
+            </a>
+            <div class="section-spacer"></div>
+            <a href="index.html" class="demo-nav__button">
+              Older
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900">
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </a>
+          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer--left-section">
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__twitter"></button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__blogger"></button>
+            <button class="mdl-mini-footer--social-btn social-btn social-btn__gplus"></button>
+          </div>
+          <div class="mdl-mini-footer--right-section">
+            <button class="mdl-mini-footer--social-btn social-btn__share"><i class="material-icons">share</i></button>
+          </div>
+        </footer>
+      </main>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
+  </body>
+</html>
