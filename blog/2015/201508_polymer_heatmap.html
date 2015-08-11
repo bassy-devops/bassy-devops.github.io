@@ -89,14 +89,14 @@
               <h5>Heatmap layer知ってますか</h5>
               <p>
                 Google Maps JavaScript APIには<a target="_break" href="https://developers.google.com/maps/documentation/javascript/heatmaplayer">Heatmap Layer</a>というものがあります。
-                これを使うと位置情報ポイントに応じて簡単に地図上にヒートマップを表示することができます。
+                これを使うと複数の緯度経度を元に簡単に地図上にヒートマップを表示することができます。
                 今回はこれをPolymerの<a target="_break" href="https://elements.polymer-project.org/elements/google-map">google-map element</a>を使いつつHeatmapの表示とデータの切り替えについて紹介したいと思います。
               </p>
               <h5>Polymerとは</h5>
               <p>
                 Polymerは古いブラウザでもWebComponentsの各技術要素を動作させるためのpolyfillと、その上で実装されたPolymerライブラリ群のことを指します。
                 詳しくは<a target="_break" href="https://www.polymer-project.org/1.0/">公式サイト</a>をみてもらうと良いかと思います。
-                Polymerを使うメリットとしては宣言的に記述できることにメリットがあります。
+                Polymerを使うメリットの一つに宣言的に記述できることがあります。
                 例えばGoogleMapを表示したい場合、公式サイトにもあるようにgoogle-mapエレメントをimportしたうえで下記のコードを記述するだけで、マーカー付きのGoogleMapを表示することができます。
               </p>
 <pre class="prettyprint"><code class="language-javascript">  &lt;google-map id=&quot;gmap&quot; latitude=&quot;37.77493&quot; longitude=&quot;-122.41942&quot; fit-to-markers&gt;
@@ -149,14 +149,11 @@
               <p>
                 ここで作成したheatmap-element.htmlをimportします。
               </p>
-<pre class="prettyprint"><code class="language-html">&lt;link rel=&quot;import&quot; href=&quot;path/to/heatmap-element.html&quot;&gt;
-</code></pre>
+<pre class="prettyprint"><code class="language-html">&lt;link rel=&quot;import&quot; href=&quot;path/to/heatmap-element.html&quot;&gt;</code></pre>
               <p>
                 次に地図を表示したい場所に読み込んだheatmap-elementタグを入力します。
-<pre class="prettyprint"><code class="language-html">&lt;heatmap-element&gt;&lt;/heatmap-element&gt;
-</code></pre>
               </p>
-
+<pre class="prettyprint"><code class="language-html">&lt;heatmap-element&gt;&lt;/heatmap-element&gt;</code></pre>
               <p>
                 すると先ほどと同じようにgoogle-mapが表示されます。
               </p>
@@ -257,7 +254,10 @@
               <p>
                 上記のコードを読み込むとこんな感じの地図が表示されると思います。
               </p>
+
               <heatmap-element></heatmap-element>
+              <br/>
+              <br/>
 
 
               <h5>最後に</h5>
