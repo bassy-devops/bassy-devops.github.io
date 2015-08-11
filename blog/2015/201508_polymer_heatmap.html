@@ -1,0 +1,363 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="PolymerでHeatmapを表示する | WEB界隈のTopicを実践的なサンプルを交えて紹介します">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PolymerでHeatmap</title>
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="192x192" href="../../images/touch/chrome-touch-icon-192x192.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Web blog">
+    <link rel="apple-touch-icon-precomposed" href="../../apple-touch-icon-precomposed.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="../../images/touch/ms-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
+    <!--
+    <link rel="canonical" href="http://www.example.com/">
+    -->
+
+    <link href='//fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=ja' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link rel="stylesheet" href="../../material.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../share-button.css">
+    <link rel="import" href="https://webpochette.appspot.com/assets/bower_components/google-map/google-map.html">
+    <link rel="import" href="heatmap-element.html">
+    <link rel="import" href="heatmap-element-demo1.html">
+    <style>
+      #gmap {
+        width:80%;
+        height: 250px;
+      }
+      pre{
+        width:80%;
+        overflow-y:scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-blog demo-blog--blogpost mdl-layout mdl-js-layout has-drawer is-upgraded">
+      <main class="mdl-layout__content">
+        <div class="demo-back">
+          <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="../../index.html">
+            <i class="material-icons">arrow_back</i>
+          </a>
+        </div>
+        <div class="demo-blog__posts mdl-grid">
+          <div class="mdl-card mdl-shadow--4dp mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__media mdl-color-text--grey-50">
+              <h3>Polymerでgoogle mapsのHeatmap layerを使う</h3>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text meta">
+              <div class="minilogo"></div>
+              <div>
+                <span>2015/08/11</span>
+                <strong>bassy_devops</strong>
+              </div>
+              <div class="section-spacer"></div>
+              <div class="meta__favorites"><i class="material-icons">favorite</i></div>
+            </div>
+            <div class="mdl-color-text--grey-700 mdl-card__supporting-text">
+
+              <h5>Heatmap layer知ってますか</h5>
+              <p>
+                Google Maps JavaScript APIには<a target="_break" href="https://developers.google.com/maps/documentation/javascript/heatmaplayer">Heatmap Layer</a>というものがあります。
+                これを使うと位置情報ポイントに応じて簡単に地図上にヒートマップを表示することができます。
+                今回はこれをPolymerの<a target="_break" href="https://elements.polymer-project.org/elements/google-map">google-map element</a>を使いつつHeatmapの表示とデータの切り替えについて紹介したいと思います。
+              </p>
+              <h5>Polymerとは</h5>
+              <p>
+                Polymerは古いブラウザでもWebComponentsの各技術要素を動作させるためのpolyfillと、その上で実装されたPolymerライブラリ群のことを指します。
+                詳しくは<a target="_break" href="https://www.polymer-project.org/1.0/">公式サイト</a>をみてもらうと良いかと思います。
+                Polymerを使うメリットとしては宣言的に記述できることにメリットがあります。
+                例えばGoogleMapを表示したい場合、公式サイトにもあるようにgoogle-mapエレメントをimportしたうえで下記のコードを記述するだけで、マーカー付きのGoogleMapを表示することができます。
+              </p>
+<pre class="prettyprint"><code class="language-javascript">  &lt;google-map id=&quot;gmap&quot; latitude=&quot;37.77493&quot; longitude=&quot;-122.41942&quot; fit-to-markers&gt;
+    &lt;google-map-marker latitude=&quot;37.779&quot; longitude=&quot;-122.3892&quot;
+        draggable=&quot;true&quot; title=&quot;Go Giants!&quot;&gt;&lt;/google-map-marker&gt;
+    &lt;google-map-marker latitude=&quot;37.777&quot; longitude=&quot;-122.38911&quot;&gt;&lt;/google-map-marker&gt;
+  &lt;/google-map&gt;
+</code></pre>
+              <google-map id="gmap" latitude="37.77493" longitude="-122.41942" fit-to-markers libraries="places,visualization">
+                <google-map-marker latitude="37.779" longitude="-122.3892"
+                    draggable="true" title="Go Giants!"></google-map-marker>
+                <google-map-marker latitude="37.777" longitude="-122.38911"></google-map-marker>
+              </google-map>
+              <p>
+                今回はPolymerを使いgoogle maps上にheatmap layerを表示するやり方を紹介したいと思います。
+              </p>
+
+              <h5>Polymer elementを作る</h5>
+              <p>
+                必ずしもPolymerを使う際にimport用にPolymer elementを作成しなくても良いのですが、それだとせっかくの再利用性が失われてしまうので、今回はPolymer elementとして作成していきます。
+                まずは heatmap-element.html を作成します。
+              </p>
+<pre class="prettyprint"><code class="language-html">&lt;dom-module id=&quot;heatmap-element&quot;&gt;
+
+  &lt;style&gt;
+    :host {
+      width:80%;
+      height: 250px;
+    }
+  &lt;/style&gt;
+  
+  &lt;template&gt;
+    &lt;google-map id=&#039;gmap2&#039; 
+      latitude=&quot;37.77493&quot; 
+      longitude=&quot;-122.41942&quot; 
+      libraries=&quot;places,visualization&quot; 
+      on-google-map-ready=&quot;_mapLoaded&quot;&gt;
+    &lt;/google-map&gt;
+    &lt;button on-click=&quot;handleHeat1&quot;&gt;heatmap1&lt;/button&gt;
+  &lt;/template&gt;
+
+  &lt;script&gt;
+    Polymer({
+      is: &quot;heatmap-element&quot;
+    });
+  &lt;/script&gt;
+
+&lt;/dom-module&gt;
+</code></pre>
+              <p>
+                ここで作成したheatmap-element.htmlをimportします。
+              </p>
+<pre class="prettyprint"><code class="language-html">&lt;link rel=&quot;import&quot; href=&quot;path/to/heatmap-element.html&quot;&gt;
+</code></pre>
+              <p>
+                次に地図を表示したい場所に読み込んだheatmap-elementタグを入力します。
+<pre class="prettyprint"><code class="language-html">&lt;heatmap-element&gt;&lt;/heatmap-element&gt;
+</code></pre>
+              </p>
+
+              <p>
+                すると先ほどと同じようにgoogle-mapが表示されます。
+              </p>
+
+              <h5>Heatmapを表示する</h5>
+              <p>
+                まずはじめにheatmapを使う場合はlibrariesにvisualizationを指定する必要があります。
+                指定できるlibrariesは<a target="_break" href="https://developers.google.com/maps/documentation/javascript/libraries">こちらのDocument</a>を参照してください。
+                またここで、マップ読み込み完了時に実行されるメソッドも設定します。
+                ここで気をつける点は、位置データを切り替える時にheatmapをnewして位置データを再設定し、heatmap.setMap(map)しないことです。
+                setMapするとmap自体に前回のデータをもっているせいか今回設定した分が追加されて表示されてしまいます。
+                データを切り替える際はheatmap.setData()を使いましょう。
+                詳細はコードのコメントを参照してください。
+              </p>
+
+<pre class="prettyprint"><code class="language-javascript">
+&lt;dom-module id=&quot;heatmap-element&quot;&gt;
+
+  &lt;style&gt;
+    :host {
+      width:80%;
+      height: 250px;
+    }
+  &lt;/style&gt;
+  
+  &lt;template&gt;
+    // librariesにvisualizationを指定します
+    // on-google-map-readyにマップ読み込み完了時に実行されるメソッド名を設定します
+    &lt;google-map 
+      id=&#039;gmap2&#039; 
+      latitude=&quot;37.77493&quot; 
+      longitude=&quot;-122.41942&quot; 
+      libraries=&quot;visualization&quot; 
+      on-google-map-ready=&quot;_mapLoaded&quot;&gt;
+    &lt;/google-map&gt;
+    &lt;button on-click=&quot;handleHeat1&quot;&gt;heatmap1&lt;/button&gt;
+    &lt;button on-click=&quot;handleHeat2&quot;&gt;heatmap2&lt;/button&gt;
+  &lt;/template&gt;
+
+  &lt;script&gt;
+    // element registration
+    Polymer({
+      is: &quot;heatmap-element&quot;,
+
+      properties: {
+        heatmap: Object
+      },
+      // heatmap1ボタンをクリックすると処理されます。
+      handleHeat1: function() {
+        var spotData =[];
+        spotData.push(new google.maps.LatLng(37.76493, -122.42942));
+        var pointArray = new google.maps.MVCArray(spotData);
+        this.heatmap.setData(pointArray);
+      },
+      // heatmap2ボタンをクリックすると処理されます。
+      handleHeat2: function() {
+        // 位置情報を設定します。
+        var spotData =[];
+        spotData.push(new google.maps.LatLng(37.77493, -122.41942));
+        spotData.push(new google.maps.LatLng(37.77593, -122.41842));
+        spotData.push(new google.maps.LatLng(37.77693, -122.41742));
+        spotData.push(new google.maps.LatLng(37.77793, -122.41642));
+        spotData.push(new google.maps.LatLng(37.77893, -122.41542));
+        spotData.push(new google.maps.LatLng(37.78493, -122.40942));
+        var pointArray = new google.maps.MVCArray(spotData);
+        // ここで、表示するheatmapの内容を切り替えます。
+        this.heatmap.setData(pointArray);
+      },
+      // マップ読み込み完了時に処理されます。
+      _mapLoaded: function() {
+        var map = this.$.gmap2.map;
+        map.zoom = 13;
+        this.heatmap = new google.maps.visualization.HeatmapLayer({
+          data: []
+        });
+        // heatmapのインスタンスは使いまわすので、ここでプロパティにセットします。
+        this.heatmap.setMap(map);
+      }
+    });
+  &lt;/script&gt;
+
+&lt;/dom-module&gt;
+</code></pre>
+
+<pre class="prettyprint"><code class="language-javascript">// 位置データ切り替え時の注意点
+  // ダメなパターン
+  var spotData.push(new google.maps.LatLng(37.76493, -122.42942));
+  var pointArray = new google.maps.MVCArray(spotData);
+  this.heatmap = new google.maps.visualization.HeatmapLayer({data: pointArray })
+  this.heatmap.setMap(map);
+  // 適切な書き方
+  var spotData.push(new google.maps.LatLng(37.76493, -122.42942));
+  var pointArray = new google.maps.MVCArray(spotData);
+  heatmap.setData(pointArray);
+  // ※言われれば当たり前のように感じるかとは思いますが、Heatmapに関しての情報も少なくハマるとなかなか苦労します。。。
+</code></pre>
+
+              <p>
+                上記のコードを読み込むとこんな感じの地図が表示されると思います。
+              </p>
+              <heatmap-element></heatmap-element>
+
+
+              <h5>最後に</h5>
+              <p>
+                今回はPolymerを使ってHeatmap layerを使う方法を紹介しました。
+                作成したコードは<a target="_break" href="https://github.com/bassy-devops/polymer-heatmap">github</a>にも公開してあります。
+                私が一般的なブログサイトで記事を書かない理由の一つに自由にスクリプトががりがり書けないことがあります。
+                技術ブログであれば、同じページ内でデモが見れた方が効率的でストレスも少なく見れると思います。
+                CMSを使うとその辺がどうも難しいので、このサイトは全てHtmlタグから書き起こしています。
+              </p>
+              <p>
+                最後まで読んで頂きありがとうございました。
+              </p>
+
+              <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+              <!-- polymer_web_app1 -->
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-2985283482830011"
+                   data-ad-slot="7705029280"
+                   data-ad-format="auto"></ins>
+              <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+              </script>
+              <!-- polymer_web_app2 -->
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-2985283482830011"
+                   data-ad-slot="1658495684"
+                   data-ad-format="auto"></ins>
+              <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+              </script>
+            </div>
+            <div class="mdl-color-text--primary-contrast mdl-card__supporting-text comments">
+              <div id="disqus_thread"></div>
+              <script type="text/javascript">
+                  /* * * CONFIGURATION VARIABLES * * */
+                  var disqus_shortname = 'webpochette';
+                  
+                  /* * * DON'T EDIT BELOW THIS LINE * * */
+                  (function() {
+                      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                  })();
+              </script>
+              <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+          </div>
+
+          <nav class="demo-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
+            <a href="../../index.html" class="demo-nav__button">
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900">
+                <i class="material-icons">arrow_back</i>
+              </button>
+              Newer
+            </a>
+            <div class="section-spacer"></div>
+            <a href="../../index.html" class="demo-nav__button">
+              Older
+              <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900">
+                <i class="material-icons">arrow_forward</i>
+              </button>
+            </a>
+          </nav>
+        </div>
+        <footer class="mdl-mini-footer">
+          <div class="social-area-syncer">
+          </div>
+          <div class="mdl-mini-footer--right-section">
+          	<ul class="social-button-syncer">
+          		<!-- Twitter -->
+          		<li class="sc-tw"><a data-url="https://bassy-devops.github.io/blog/2015/201508_polymer_web_app.html" href="https://twitter.com/share" class="twitter-share-button" data-lang="ja" data-count="vertical" data-dnt="true">ツイート</a></li>
+          		<!-- Facebook -->
+          		<li class="sc-fb"><div class="fb-like" data-href="https://bassy-devops.github.io/blog/2015/201508_polymer_web_app.html" data-layout="box_count" data-action="like" data-show-faces="true" data-share="false"></div></li>
+          		<!-- はてなブックマーク -->
+          		<li><a href="http://b.hatena.ne.jp/entry/https://bassy-devops.github.io/blog/2015/201508_polymer_web_app.html" class="hatena-bookmark-button" data-hatena-bookmark-layout="vertical-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border:none;" /></a></li>
+          	</ul>
+            <div id="fb-root"></div>
+          </div>
+        </footer>
+      </main>
+      <div id="apvad-66e28bef39a03904296e59bd8b39b145" style="position:relative;margin-left:auto;margin-right:auto;width:100%;" data-adformat="rect"></div>
+      <script type="text/javascript" src="//apvdr.com/v2/uvat.js.php?s=66e28bef39a03904296e59bd8b39b145"></script>
+      <div class="mdl-layout__obfuscator"></div>
+    </div>
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
+    <script src="https://webpochette.appspot.com/assets/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <script src="../../share-button.js"></script>
+    <script type="text/javascript" src="//cdn.apvdr.com/js/apv-ifbstr.min.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      
+      ga('create', 'UA-64763488-2', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
