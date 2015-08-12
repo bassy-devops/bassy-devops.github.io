@@ -557,6 +557,10 @@ body .demo-blog {
   height: 100%;
 }
 
+ins {
+  width: 100%;
+}
+
 .mdl-card__supporting-text ins {
   width: 80%;
 }
