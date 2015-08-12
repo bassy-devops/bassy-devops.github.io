@@ -554,7 +554,7 @@ body .demo-blog {
 
 ins {
   width: 100%;
-  min-height: 360px;
+  max-height: 360px;
 }
 
 .mdl-card__supporting-text ins {
